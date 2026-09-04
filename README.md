@@ -1,24 +1,33 @@
 <div align="center">
 
 # 🎓 AcaGen
+
 ### Automated Course Content Generator
 
-A local Retrieval-Augmented Generation (RAG) application that transforms academic PDF material into interactive, topic-focused learning content.
+**A local Retrieval-Augmented Generation (RAG) application that transforms academic PDF material into interactive, topic-focused learning content.**
 
-**Upload** &rarr; **Retrieve** &rarr; **Generate** &rarr; **Learn**
+[![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B.svg)](https://streamlit.io/)
+[![LangChain](https://img.shields.io/badge/LangChain-Text%20Splitting-1C3C3C.svg)](https://www.langchain.com/)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Store-orange.svg)](https://www.trychroma.com/)
+[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black.svg)](https://ollama.com/)
+
+**Upload → Retrieve → Generate → Learn**
 
 </div>
 
 ---
 
 ## 📌 Overview
-AcaGen is an AI-powered academic content generation system designed to reduce the effort required to convert course material into useful study resources.
+
+**AcaGen** is an AI-powered academic content generation system designed to reduce the effort required to convert course material into useful study resources.
 
 Users can upload one or more PDF documents containing lecture notes, syllabi, or other academic material. AcaGen extracts the text, divides it into meaningful chunks, stores those chunks in a persistent ChromaDB vector store, and retrieves the most relevant content for a user's topic or question.
 
-The retrieved context is then provided to Qwen3:8B, running locally through Ollama, to generate content grounded in the uploaded material.
+The retrieved context is then provided to **Qwen3:8B**, running locally through **Ollama**, to generate content grounded in the uploaded material.
 
 AcaGen currently supports:
+
 * ❓ Question & Answer / Doubt Solving
 * 📝 MCQ Generation
 * 🃏 Flashcard Generation
@@ -28,52 +37,465 @@ AcaGen currently supports:
 * 📚 Multiple PDF processing
 * 💬 Session-based Q&A chat history
 
-AcaGen is designed as a local RAG application, with document processing and LLM inference performed entirely on your device.
+> **AcaGen is currently designed as a local RAG application, with document processing and LLM inference performed locally.**
 
 ---
 
 ## ✨ Features
 
-* **📄 Multiple PDF Upload:** Upload multiple PDF documents through the Streamlit interface and process them together as course material.
-* **❓ RAG-Based Q&A:** Ask questions about the uploaded material. AcaGen retrieves the most relevant document chunks and uses them as context for Qwen3:8B to generate an answer.
-* **📝 MCQ Generation:** Enter a topic and generate multiple-choice questions based on the retrieved course material.
-* **🃏 Flashcard Generation:** Generate concise question-and-answer flashcards for a selected topic. Flashcards are displayed interactively using expandable cards.
-* **📒 Notes Generation:** Generate structured revision notes based on the relevant portions of the uploaded material.
-* **📅 Week-Wise Study Planner:** Generate a topic-focused study plan organized into weekly learning objectives.
-* **📥 Download Generated Content:** Generated MCQs, notes, and study plans can be downloaded as `.txt` files directly from the application.
-* **📊 Processing Feedback:** The interface provides real-time processing status and a progress indicator while PDF documents are being indexed.
-* **💬 Chat History:** Questions and generated answers are maintained in the current Streamlit session and displayed through the sidebar.
+### 📄 Multiple PDF Upload
+Upload multiple PDF documents through the Streamlit interface and process them together as course material.
+
+### ❓ RAG-Based Q&A
+Ask questions about the uploaded material. AcaGen retrieves the most relevant document chunks and uses them as context for Qwen3:8B to generate an answer.
+
+### 📝 MCQ Generation
+Enter a topic and generate multiple-choice questions based on the retrieved course material.
+
+### 🃏 Flashcard Generation
+Generate concise question-and-answer flashcards for a selected topic. Flashcards are displayed interactively using expandable cards.
+
+### 📒 Notes Generation
+Generate structured revision notes based on the relevant portions of the uploaded material.
+
+### 📅 Week-Wise Study Planner
+Generate a topic-focused study plan organized into weekly learning objectives.
+
+### 📥 Download Generated Content
+Generated MCQs, notes, and study plans can be downloaded as `.txt` files directly from the application.
+
+### 📊 Processing Feedback
+The interface provides processing status and a progress bar while PDF documents are being processed.
+
+### 💬 Chat History
+Questions and generated answers are maintained in the current Streamlit session and displayed through the sidebar.
 
 ---
 
 ## 🧠 How AcaGen Works
 
-AcaGen follows an end-to-end local Retrieval-Augmented Generation (RAG) pipeline:
+AcaGen follows a straightforward **Retrieval-Augmented Generation (RAG)** pipeline.
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion ["1. Document Ingestion Pipeline"]
-        A["📄 Academic PDFs"] --> B["⚙️ PyMuPDF (fitz)<br><i>Text Extraction</i>"]
-        B --> C["✂️ RecursiveCharacterTextSplitter<br><i>Chunk: 1000 | Overlap: 200</i>"]
-        C --> D[("🗄️ ChromaDB<br><i>Persistent Vector Store</i>")]
-    end
+    A[📄 Academic PDFs] --> B[PyMuPDF<br/>Text Extraction]
+    B --> C[RecursiveCharacterTextSplitter<br/>1000 / 200 overlap]
+    C --> D[(ChromaDB<br/>Persistent Storage)]
 
-    subgraph Retrieval ["2. Context Retrieval"]
-        E["👤 User Query / Topic"] --> F["🔍 Top-4 Vector Retrieval"]
-        D -. Semantic Query .-> F
-        F --> G["📋 Relevant Context Chunks"]
-    end
+    E[🧑 User Query / Topic] --> F[Top-4 Retrieval<br/>Relevant Chunks]
+    D --> F
+    F --> G[Context + Prompt]
+    G --> H[Qwen3:8B via Ollama]
+    H --> I[Generated Content<br/>Q&A · MCQs · Flashcards<br/>Notes · Study Plan]
+```
 
-    subgraph Generation ["3. Local Inference & UI"]
-        G --> H["📝 Context + Feature Prompt"]
-        H --> I["🤖 Qwen3:8B<br><i>via Ollama Runtime</i>"]
-        I --> J["💻 Streamlit UI<br><i>Q&A | MCQs | Flashcards | Notes | Study Plan</i>"]
-    end
+---
 
-    classDef primary fill:#f8f9fa,stroke:#4a5568,stroke-width:1.5px,color:#1a202c;
-    classDef storage fill:#edf2f7,stroke:#2b6cb0,stroke-width:2px,color:#2b6cb0;
-    classDef model fill:#fefcbf,stroke:#b7791f,stroke-width:2px,color:#744210;
-    
-    class A,B,C,E,F,G,H,J primary;
-    class D storage;
-    class I model;
+## 🔍 RAG Pipeline
+
+### 1. PDF Text Extraction
+
+AcaGen uses **PyMuPDF** to open uploaded PDF files and extract text page by page.
+
+```python
+doc = pymupdf.open(pdf_path)
+
+for page in doc:
+    text = page.get_text()
+```
+
+The extracted page text is combined into a single text representation for further processing.
+
+---
+
+### 2. Text Chunking
+
+Large documents are divided into smaller chunks using LangChain's `RecursiveCharacterTextSplitter`.
+
+Current configuration:
+
+```text
+Chunk Size    : 1000
+Chunk Overlap : 200
+```
+
+The recursive splitter attempts to preserve natural text boundaries while creating chunks. The overlap helps retain contextual information between neighboring chunks.
+
+---
+
+### 3. Vector Storage
+
+The generated chunks are stored in a persistent **ChromaDB** collection.
+
+```python
+client = chromadb.PersistentClient(path="chroma_db")
+
+collection = client.get_or_create_collection(
+    name="course_material"
+)
+```
+
+ChromaDB provides the persistent local vector-store layer used for retrieval.
+
+---
+
+### 4. Retrieval
+
+When a user enters a question or topic, AcaGen queries ChromaDB and retrieves the **top 4 relevant chunks**.
+
+```python
+results = collection.query(
+    query_texts=[query],
+    n_results=4
+)
+```
+
+The value `4` is a practical retrieval choice for this implementation, balancing contextual coverage against unnecessary or noisy information.
+
+---
+
+### 5. Prompt Construction
+
+The retrieved chunks are combined into a context and inserted into a feature-specific prompt.
+
+```mermaid
+flowchart LR
+    A[Retrieved Chunks] --> B[Context]
+    B --> C[Context + User Query/Topic]
+    C --> D[Feature-Specific Prompt]
+```
+
+Different generation tasks use different prompts — for example, Q&A, MCQs, flashcards, notes, and study planning.
+
+---
+
+### 6. Local LLM Generation
+
+The final prompt is sent to **Qwen3:8B** through Ollama.
+
+```python
+response = chat(
+    model="qwen3:8b",
+    messages=[
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+)
+```
+
+The generated response is then returned to the Streamlit interface.
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology | Purpose |
+|---|---|---|
+| **Programming Language** | Python 3.13+ | Core application logic |
+| **Frontend / UI** | Streamlit | Interactive web interface |
+| **PDF Processing** | PyMuPDF | PDF text extraction |
+| **Text Chunking** | LangChain Text Splitter | Recursive document chunking |
+| **Vector Store** | ChromaDB | Persistent local storage and retrieval |
+| **LLM Runtime** | Ollama | Local model execution |
+| **Language Model** | Qwen3:8B | Content generation |
+| **Unique IDs** | UUID | Unique chunk identifiers |
+
+---
+
+## 📂 Project Structure
+
+```text
+AcaGen/
+│
+├── streamlit_app.py
+│
+├── utils/
+│   ├── chunker.py
+│   ├── vector_store.py
+│   ├── retriever.py
+│   ├── generator.py
+│   ├── mcq_generator.py
+│   ├── flashcard_generator.py
+│   ├── notes.py
+│   ├── week.py
+│   └── prompts.py
+│
+├── Data/
+│
+├── chroma_db/
+│
+├── requirements.txt
+│
+├── .gitignore
+│
+└── README.md
+```
+
+### Module Responsibilities
+
+| File | Responsibility |
+|---|---|
+| `streamlit_app.py` | Main application interface and feature routing |
+| `chunker.py` | Splits extracted text into chunks |
+| `vector_store.py` | Stores chunks in ChromaDB |
+| `retriever.py` | Retrieves relevant document chunks |
+| `generator.py` | Generates RAG-based answers |
+| `mcq_generator.py` | Generates MCQs |
+| `flashcard_generator.py` | Generates flashcards |
+| `notes.py` | Generates revision notes |
+| `week.py` | Generates week-wise study plans |
+| `prompts.py` | Stores generation prompts |
+
+---
+
+## ⚙️ Requirements
+
+Before running AcaGen, make sure you have:
+
+* **Python 3.13+**
+* **Ollama**
+* Sufficient local resources to run the **Qwen3:8B** model
+* The Python dependencies listed in `requirements.txt`
+
+> The exact performance of local Qwen3:8B inference depends on your CPU, RAM, GPU, and Ollama configuration.
+
+---
+
+## 🚀 Installation
+
+### 1. Clone the Repository
+
+Replace the repository URL below with the actual GitHub repository URL after publishing the project.
+
+```bash
+git clone https://github.com/<your-username>/AcaGen.git
+cd AcaGen
+```
+
+### 2. Create a Virtual Environment
+
+**Windows**
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**macOS / Linux**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Python Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Install and Run Ollama
+
+Install Ollama on your system and make sure the Ollama service is running.
+
+Pull the required model:
+
+```bash
+ollama pull qwen3:8b
+```
+
+Verify that the model is available:
+
+```bash
+ollama list
+```
+
+You should see:
+
+```text
+qwen3:8b
+```
+
+### 5. Run AcaGen
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Streamlit will start the application locally.
+
+---
+
+## ▶️ Usage
+
+```mermaid
+flowchart TD
+    A[Step 1 — Upload Course Material] --> B[Step 2 — Process PDFs]
+    B --> C[Step 3 — Select a Feature<br/>Q&A · MCQs · Flashcards · Notes · Planner]
+    C --> D[Step 4 — Enter Question / Topic]
+    D --> E[Step 5 — Generate]
+    E --> F[Step 6 — Review / Download]
+```
+
+**Step 1 — Upload Course Material**
+Upload one or more PDF documents using the file uploader.
+
+**Step 2 — Process PDFs**
+Click **Process PDF**. AcaGen extracts text, chunks it, and stores it in ChromaDB.
+
+**Step 3 — Select a Feature**
+Choose one of: Q&A, MCQs, Flashcards, Notes, or Week-Wise Planner.
+
+**Step 4 — Enter a Question or Topic**
+Depending on the selected feature, enter a question or topic.
+
+**Step 5 — Generate**
+AcaGen retrieves relevant chunks from ChromaDB and passes them to the appropriate generation module.
+
+**Step 6 — Review / Download**
+Review the generated content in the Streamlit interface. MCQs, notes, and week-wise plans can also be downloaded as text files.
+
+---
+
+## 🔐 Privacy & Local Processing
+
+AcaGen is designed around local document processing and local LLM inference.
+
+The current implementation uses:
+
+* Local PDF processing with PyMuPDF
+* Local persistent ChromaDB storage
+* Local Qwen3:8B inference through Ollama
+
+No cloud LLM API is required for the current implementation. This makes the project suitable for experimenting with academic material without requiring the uploaded content to be sent to a hosted LLM API.
+
+> **Note:** Local processing does not automatically mean every component of a user's operating environment is private or secure. Deployment, machine configuration, file permissions, and network configuration still matter.
+
+---
+
+## ⚠️ Current Limitations
+
+AcaGen is currently a working prototype and has several limitations.
+
+**Document Limitations**
+* Supports PDF input.
+* Text extraction depends on text being available in the PDF.
+* Scanned, handwritten, and image-only content is not currently processed through OCR.
+
+**AI Limitations**
+* Generation quality depends on the retrieved context and Qwen3:8B's capabilities.
+* The current retrieval pipeline uses a fixed top-4 retrieval setting.
+* There is no dedicated reranking or query-rewriting stage.
+* The system does not guarantee that every generated statement is factually correct.
+
+**Application Limitations**
+
+The current version does **not** include:
+
+* User authentication
+* Login system
+* User-provided model API key management
+* Cloud LLM deployment
+* LangGraph-based agent workflows
+* Multimodal document understanding
+* Email integrations
+* Google Docs integration
+* Human-in-the-loop approval workflows
+
+These are potential future improvements rather than current features.
+
+---
+
+## 🔮 Future Scope
+
+**🔐 User Authentication & API Key Management**
+Introduce a dedicated login system and an interface for configuring model/API credentials where required. A supporting rulebook or setup guide could explain how users obtain and configure model API keys.
+
+**🖼️ OCR & Image-Based Content**
+Extend document processing to identify text contained in scanned documents, handwritten notes, whiteboards, and images embedded inside course material. OCR could work alongside the existing PDF extraction pipeline.
+
+**👁️ Multimodal AI**
+Extend AcaGen beyond plain extracted text so that visual information such as diagrams, figures, handwritten content, and other document elements can also contribute to generation.
+
+**🔗 External Tools & Integrations**
+Potential integrations include email, Google Docs, and other educational productivity tools.
+
+**🤖 More Advanced RAG**
+Future versions could explore query rewriting, reranking, hybrid retrieval, more advanced chunking strategies, agentic RAG workflows, and LangGraph-based orchestration.
+
+---
+
+## 🎯 Project Objective
+
+The objective of AcaGen is to demonstrate how **Retrieval-Augmented Generation can be applied to educational workflows** to transform unstructured course material into useful, topic-focused learning resources.
+
+Rather than relying solely on an LLM's internal knowledge, AcaGen first retrieves relevant information from the user's uploaded academic material and then uses that context during generation.
+
+```mermaid
+flowchart LR
+    A[Academic Material] --> B[Information Retrieval]
+    B --> C[Context-Grounded Generation]
+    C --> D[Learning Resources]
+```
+
+---
+
+## 📊 Project Status
+
+**Current Status: Functional Prototype**
+
+**Implemented**
+
+- [x] Multiple PDF upload
+- [x] PDF text extraction
+- [x] Recursive text chunking
+- [x] Persistent ChromaDB storage
+- [x] Top-4 retrieval
+- [x] RAG-based Q&A
+- [x] MCQ generation
+- [x] Flashcard generation
+- [x] Notes generation
+- [x] Week-wise study planner
+- [x] Streamlit interface
+- [x] Session chat history
+- [x] Downloadable generated content
+- [x] Local Qwen3:8B inference through Ollama
+
+**Planned**
+
+- [ ] Authentication
+- [ ] API key configuration
+- [ ] OCR support
+- [ ] Multimodal AI
+- [ ] External tool integrations
+- [ ] Advanced RAG capabilities
+
+---
+
+## 👨‍💻 Author
+
+**Prakash Kamath**
+B.Tech — Computer Science & Engineering
+JK Lakshmipat University, Jaipur
+
+---
+
+## 📄 License
+
+This project is intended to be released under the **MIT License**.
+
+See the [`LICENSE`](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+### 🎓 AcaGen
+
+**From course material to personalized learning content.**
+
+Built with Python, RAG, ChromaDB, Ollama, Qwen3:8B, and Streamlit.
+
+</div>
