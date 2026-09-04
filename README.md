@@ -4,11 +4,7 @@
 
 ### Automated Course Content Generator
 
-**AcaGen** is an AI-powered course content generation system that transforms uploaded PDF course material into interactive, context-aware learning resources using **Retrieval-Augmented Generation (RAG)**.
-
-Instead of manually searching through lengthy course documents, users can upload their course material once and use natural-language queries to generate **answers, MCQs, flashcards, revision notes, and week-wise study plans** based on the relevant content retrieved from their documents.
-
-AcaGen combines **PyMuPDF** for PDF text extraction, **LangChain** for recursive text chunking, **ChromaDB** for persistent vector storage and retrieval, and **Qwen3:8B** running locally through **Ollama** for content generation.
+**A local Retrieval-Augmented Generation (RAG) application that transforms academic PDF material into interactive, topic-focused learning content.**
 
 
 
