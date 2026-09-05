@@ -11,6 +11,9 @@
 [![LangChain](https://img.shields.io/badge/LangChain-Text%20Splitting-1C3C3C?style=for-the-badge)](https://www.langchain.com/)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Store-FF6F00?style=for-the-badge)](https://www.trychroma.com/)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-000000?style=for-the-badge&logo=ollama&logoColor=white)](https://ollama.com/)
+[![Python](https://img.shields.io/badge/PYTHON-3.13+-1E4273?style=for-the-badge&logo=python&logoColor=white&labelColor=333333)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/STREAMLIT-APP-8B0000?style=for-the-badge&logo=streamlit&logoColor=white&labelColor=333333)](https://streamlit.io/)
+[![LangChain](https://img.shields.io/badge/LANGCHAIN-TEXT_SPLITTING-48C774?style=for-the-badge&logo=langchain&logoColor=white&labelColor=333333)](https://www.langchain.com/)
 
 **Upload → Retrieve → Generate → Learn**
 
